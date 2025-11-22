@@ -11,10 +11,6 @@
             <h1 class="text-3xl font-playfair">
               Connectez-vous
             </h1>
-            <div v-if="errorMessage !== null"
-                 class="relative block w-full mt-3 py-3 px-4 mb-4 text-base leading-5 text-white bg-red-400 rounded-2xl opacity-100 font-regular">
-              {{ errorMessage }}
-            </div>
             <Form class="w-full flex-1 mt-5" v-slot="{ submitCount }" :validation-schema="schema" @submit="handleLogin">
               <Field as="input" name="email" type="email" aria-label="Adresse mail"
                      class="w-full px-6 py-3 rounded-2xl font-medium bg-gray-100 border border-gray-200
@@ -89,7 +85,7 @@
               <!--                                    transition-all duration-300 ease-in-out-->
               <!--                                    focus:shadow-outline focus:outline-none">-->
               <!--                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg"-->
-              <!--                     alt="Google" style="width: 20px; vertical-align: middle; margin-right: 8px;">-->
+              <!--                     alt="Google" style="width: 20px vertical-align: middle; margin-right: 8px;">-->
               <!--                Connexion avec Google-->
               <!--              </a>-->
               <p class="mt-6 text-sm text-gray-600 text-center dark:text-gray-200">
@@ -103,7 +99,7 @@
         </div>
         <div class="flex-1 text-center hidden lg:flex">
           <div class="w-full bg-contain bg-center bg-no-repeat mr-14 my-8"
-               style="background-image: url('/images/index.png');">
+               style="background-image: url('/images/index.png')">
           </div>
         </div>
       </div>
@@ -114,6 +110,7 @@
 <script setup>
 import {ref, inject} from 'vue'
 import {useRouter} from 'vue-router'
+import {useToast} from "../../plugin/useToast.js"
 import apiClient from '../../plugin/axios.js'
 import {Form, Field, ErrorMessage} from 'vee-validate'
 import * as yup from 'yup'
@@ -132,7 +129,6 @@ const schema = yup.object({
 })
 
 const isLoading = ref(false)
-const errorMessage = ref(null)
 const showPassword = ref(false)
 
 const togglePassword = () => {
@@ -141,7 +137,6 @@ const togglePassword = () => {
 
 const handleLogin = async (values) => {
   isLoading.value = true
-  errorMessage.value = null
 
   try {
     const response = await apiClient.post('/login', {
@@ -152,7 +147,7 @@ const handleLogin = async (values) => {
     localStorage.setItem('jwt_token', response.data.token)
     router.push('/dashboard')
   } catch (error) {
-    errorMessage.value = error?.response?.data?.message || 'Une erreur inconnue est survenue.'
+    useToast().addToast(error?.response?.data?.message || 'Une erreur inconnue est survenue.', 'error')
   } finally {
     isLoading.value = false
   }

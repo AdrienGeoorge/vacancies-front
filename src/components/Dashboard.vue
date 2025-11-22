@@ -10,9 +10,9 @@
 export default {
   methods: {
     logout() {
-      localStorage.removeItem('jwt_token');
-      this.$router.push('/login');
+      localStorage.removeItem('jwt_token')
+      this.$router.push('/login')
     },
   },
-};
+}
 </script>

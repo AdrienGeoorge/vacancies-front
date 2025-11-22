@@ -3,12 +3,13 @@ import Login from '../components/Auth/Login.vue';
 import Register from "../components/Auth/Register.vue";
 import Dashboard from '../components/Dashboard.vue';
 import Profile from '../components/Profile.vue';
+import Claim from "../components/Password/Claim.vue";
 
 const routes = [
     {path: '/', redirect: '/login'},
     {path: '/login', component: Login, meta: {title: 'Bienvenue sur ' + import.meta.env.VITE_APP_NAME}},
     {path: '/register', component: Register, meta: {title: import.meta.env.VITE_APP_NAME + ' - Inscription'}},
-    {path: '/password/claim', component: Login, meta: {title: import.meta.env.VITE_APP_NAME + ' - Réinitialisez votre mot de passe'}},
+    {path: '/password/claim', component: Claim, meta: {title: import.meta.env.VITE_APP_NAME + ' - Réinitialisez votre mot de passe'}},
     {path: '/dashboard', component: Dashboard, meta: {title: import.meta.env.VITE_APP_NAME + ' - Tableau de bord'}},
     {path: '/profile', component: Profile},
 ];

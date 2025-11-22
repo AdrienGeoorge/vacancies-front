@@ -13,6 +13,7 @@
   --font-roboto-medium: "RobotoMedium", sans-serif;
 
   /* radius */
+  --radius-base: 0.5rem;
   --radius-4xl: 2rem;
   --radius-5xl: 2.5rem;
   --radius-8xl: 4em;
@@ -29,6 +30,25 @@
   --color-notification-border-dark: #747A93;
   --color-shadow: #ffffff;
   --color-shadow-dark: #363d54;
+
+  /* Toast & semantic colors (for custom toasts) */
+  --color-default: #e5e7eb; /* border-default */
+  --color-neutral-primary-soft: #f5f7fa;
+  --color-neutral-secondary-medium: #e7ebf0;
+  --color-neutral-tertiary: #cbd5e1; /* ring color */
+  --color-heading: #111827;
+
+  --color-fg-success: #22c55e; /* green-500 */
+  --color-success-soft: #dcfce7; /* green-100 */
+  --color-fg-danger: #ef4444; /* red-500 */
+  --color-danger-soft: #fee2e2; /* red-100 */
+  --color-fg-warning: #eab308; /* amber-500 */
+  --color-warning-soft: #fef3c7; /* amber-100 */
+}
+
+/* custom small shadow token for the toast card */
+@theme {
+  --shadow-xs: 0 1px 2px 0 rgba(16, 24, 40, 0.05);
 }
 
 /* Tailwind CSS v4: use the single import instead of v3 @tailwind directives */

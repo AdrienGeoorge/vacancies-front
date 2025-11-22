@@ -104,7 +104,7 @@
         </div>
         <div class="flex-1 text-center hidden lg:flex">
           <div class="w-full bg-contain bg-center bg-no-repeat mr-14 my-8"
-               style="background-image: url('/images/index.png');">
+               style="background-image: url('/images/index.png')">
           </div>
         </div>
       </div>
@@ -115,9 +115,10 @@
 <script setup>
 import {ref, inject} from 'vue'
 import {useRouter} from 'vue-router'
+import {useToast} from "../../plugin/useToast.js"
 import apiClient from '../../plugin/axios.js'
-import {ErrorMessage, Field, Form} from "vee-validate";
-import * as yup from "yup";
+import {ErrorMessage, Field, Form} from "vee-validate"
+import * as yup from "yup"
 
 const globalState = inject('globalState')
 const router = useRouter()
@@ -162,7 +163,11 @@ const handleRegister = async (values) => {
     localStorage.setItem('jwt_token', response.data.token)
     router.push('/dashboard')
   } catch (error) {
-    errorMessage.value = error.response?.data?.message || 'Une erreur inconnue est survenue.'
+    if (error.response.status === 409) {
+      useToast().addToast(error?.response.data.message, 'warning')
+    } else {
+      useToast().addToast(error?.response?.data?.message || 'Une erreur inconnue est survenue.', 'error')
+    }
   } finally {
     isLoading.value = false
   }
