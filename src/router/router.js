@@ -1,15 +1,16 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import Login from '../components/Login.vue';
+import {createRouter, createWebHistory} from 'vue-router';
+import Login from '../components/Auth/Login.vue';
+import Register from "../components/Auth/Register.vue";
 import Dashboard from '../components/Dashboard.vue';
 import Profile from '../components/Profile.vue';
 
 const routes = [
-    { path: '/', redirect: '/login' },
-    { path: '/login', component: Login },
-    { path: '/register', component: Login },
-    { path: '/password/claim', component: Login },
-    { path: '/dashboard', component: Dashboard },
-    { path: '/profile', component: Profile },
+    {path: '/', redirect: '/login'},
+    {path: '/login', component: Login, meta: {title: 'Bienvenue sur ' + import.meta.env.VITE_APP_NAME}},
+    {path: '/register', component: Register, meta: {title: import.meta.env.VITE_APP_NAME + ' - Inscription'}},
+    {path: '/password/claim', component: Login, meta: {title: import.meta.env.VITE_APP_NAME + ' - Réinitialisez votre mot de passe'}},
+    {path: '/dashboard', component: Dashboard, meta: {title: import.meta.env.VITE_APP_NAME + ' - Tableau de bord'}},
+    {path: '/profile', component: Profile},
 ];
 
 const router = createRouter({
@@ -26,6 +27,14 @@ router.beforeEach((to, from, next) => {
     } else {
         next();
     }
-});
+})
+
+router.afterEach((to) => {
+    if (to.meta.title) {
+        document.title = to.meta.title
+    } else {
+        document.title = import.meta.env.VITE_APP_NAME
+    }
+})
 
 export default router;

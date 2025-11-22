@@ -6,10 +6,10 @@
         <div class="lg:w-3/6 xl:w-6/12 p-6 sm:px-8 lg:py-5 flex lg:flex-none items-center">
           <div class="flex flex-col px-10">
             <h1 class="mt-12 mb-5 text-xl font-poppins-semi-bold">
-              Bienvenue sur <span class="text-teal-500">{{ globalState.app_name }}</span>
+              Bienvenue sur <span class="text-teal-500">{{ globalState.APP_NAME }}</span>
             </h1>
             <h1 class="text-3xl font-playfair">
-              Connectez-vous
+              Créez votre compte
             </h1>
             <div class="w-full flex-1 mt-5">
               <div v-if="errorMessage !== null"
@@ -17,12 +17,26 @@
                 {{ errorMessage }}
               </div>
               <div>
-                <input v-model="email" type="email" name="email" aria-label="Adresse mail"
+                <input v-model="firstname" type="text" name="firstname" aria-label="Prenom"
                        class="w-full px-8 py-4 rounded-2xl font-medium bg-gray-100 border border-gray-200
                                           placeholder-gray-400 text-sm
                                           focus:outline-none focus:border-gray-400 focus:bg-white
                                           dark:bg-transparent dark:border-gray-300 dark:focus:bg-transparent
                                           dark:placeholder-gray-300"
+                       placeholder="Prenom" autocomplete="firstname" required/>
+              </div>
+              <div>
+                <input v-model="lastname" type="text" name="lastname" aria-label="Nom de famille"
+                       class="w-full px-8 py-4 rounded-2xl font-medium bg-gray-100 border border-gray-200
+                              placeholder-gray-400 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-3
+                              dark:bg-transparent dark:border-gray-300 dark:focus:bg-transparent dark:placeholder-gray-300"
+                       placeholder="Nom de famille" autocomplete="lastname" required/>
+              </div>
+              <div>
+                <input v-model="email" type="email" name="email" aria-label="Adresse mail"
+                       class="w-full px-8 py-4 rounded-2xl font-medium bg-gray-100 border border-gray-200
+                              placeholder-gray-400 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-3
+                              dark:bg-transparent dark:border-gray-300 dark:focus:bg-transparent dark:placeholder-gray-300"
                        placeholder="Adresse mail" autocomplete="email" required/>
               </div>
               <div class="relative">
@@ -56,18 +70,12 @@
                   </span>
                 </button>
               </div>
-              <p class="my-5 text-sm text-gray-600 text-center dark:text-gray-200">
-                Mot de passe oublié ? Changez-le
-                <router-link to="/password/claim" class="border-b border-gray-500 border-dotted">
-                  en cliquant ici
-                </router-link>
-              </p>
               <button
                   class="mt-5 tracking-wide bg-teal-500 border-2 border-teal-400 text-white w-full
                                     py-4 rounded-full flex items-center justify-center hover:bg-teal-700
                                     transition-all duration-300 ease-in-out
                                     focus:shadow-outline focus:outline-none cursor-pointer"
-                  @click="handleLogin">
+                  @click="handleRegister">
                 <template v-if="isLoading">
                   <svg class="size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
                        viewBox="0 0 24 24">
@@ -77,21 +85,12 @@
                   </svg>
                 </template>
                 <template v-else>
-                  Se connecter
+                  S'inscrire
                 </template>
               </button>
-              <!--              <a href="{{ path('auth_connect_google_start') }}"-->
-              <!--                 class="mt-5 tracking-wide bg-gray-100 border-2 border-gray-200 text-body-dark w-full-->
-              <!--                                    py-4 rounded-full flex items-center justify-center hover:bg-gray-300-->
-              <!--                                    transition-all duration-300 ease-in-out-->
-              <!--                                    focus:shadow-outline focus:outline-none">-->
-              <!--                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg"-->
-              <!--                     alt="Google" style="width: 20px; vertical-align: middle; margin-right: 8px;">-->
-              <!--                Connexion avec Google-->
-              <!--              </a>-->
               <p class="mt-6 mb-10 text-sm text-gray-600 text-center dark:text-gray-200">
-                Vous n'avez pas encore de compte? Créez-le
-                <router-link to="/register" class="border-b border-gray-500 border-dotted">
+                Vous avez déjà un compte? Connectez-vous
+                <router-link to="/login" class="border-b border-gray-500 border-dotted">
                   en cliquant ici
                 </router-link>
               </p>
@@ -111,22 +110,26 @@
 <script setup>
 import {ref, inject} from 'vue'
 import {useRouter} from 'vue-router'
-import apiClient from '../plugin/axios.js'
+import apiClient from '../../plugin/axios.js'
 
 const globalState = inject('globalState')
 const router = useRouter()
 
+const firstname = ref('')
+const lastname = ref('')
 const email = ref('')
 const password = ref('')
 const isLoading = ref(false)
 let errorMessage = ref(null)
 
-const handleLogin = async () => {
+const handleRegister = async () => {
   isLoading.value = true
   errorMessage.value = null
 
   try {
-    const response = await apiClient.post('/login', {
+    const response = await apiClient.post('/register', {
+      firstname: firstname.value,
+      lastname: lastname.value,
       email: email.value,
       password: password.value,
     })
@@ -134,7 +137,7 @@ const handleLogin = async () => {
     localStorage.setItem('jwt_token', response.data.token)
     router.push('/dashboard')
   } catch (error) {
-    errorMessage.value = error.response?.data?.message || 'Erreur inconnue'
+    errorMessage.value = error.response?.data?.message || 'Une erreur inconnue est survenue.'
   } finally {
     isLoading.value = false
   }
