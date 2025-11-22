@@ -1,12 +1,12 @@
 <template>
-  <div class="lg:bg-body dark:bg-body-dark flex items-center justify-center h-full flex-grow">
+  <div class="lg:bg-body dark:bg-body-dark flex items-center justify-center h-[100vh] flex-grow">
     <div class="text-gray-900 flex justify-center sm:items-center dark:text-white w-full lg:w-10/12 xl:w-9/12">
       <div class="w-full max-w-screen-lg m-0 lg:m-10 lg:min-h-[39em] lg:shadow lg:rounded-5xl overflow-hidden flex justify-center lg:flex-1 flex-none
                    lg:bg-box dark:lg:bg-box-dark">
         <div class="lg:w-3/6 xl:w-6/12 p-6 sm:px-8 lg:py-5 flex lg:flex-none items-center">
           <div class="flex flex-col px-10">
             <h1 class="mt-2 mb-5 text-xl font-poppins-semi-bold">
-              Bienvenue sur <span class="text-teal-500">{{ globalState.APP_NAME }}</span>
+              Bienvenue sur <span class="text-teal-500">{{ appName }}</span>
             </h1>
             <h1 class="text-3xl font-playfair">
               Créez votre compte
@@ -50,22 +50,8 @@
                 <button type="button"
                         class="absolute right-4 top-3/4 -translate-y-5 text-gray-500 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 cursor-pointer"
                         aria-label="Afficher le mot de passe" @click="togglePassword()">
-                  <span :class="{ hidden: showPassword }">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                         viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.964 9.964 0 012.052-3.368M6.72 6.72A9.953 9.953 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.961 9.961 0 01-4.233 5.233M3 3l18 18"/>
-                    </svg>
-                  </span>
-                  <span class="block eye-open" :class="{ hidden: !showPassword }">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                         viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                    </svg>
-                  </span>
+                  <EyeIcon v-if="showPassword" class="block size-5" aria-hidden="true"/>
+                  <EyeSlashIcon v-if="!showPassword" class="block size-5" aria-hidden="true"/>
                 </button>
               </div>
               <ErrorMessage name="password" v-slot="{ message }">
@@ -109,15 +95,20 @@
 </template>
 
 <script setup>
-import {ref, inject} from 'vue'
+import {ref} from 'vue'
 import {useRouter} from 'vue-router'
 import {useToast} from "../../plugin/useToast.js"
-import apiClient from '../../plugin/axios.js'
-import {ErrorMessage, Field, Form} from "vee-validate"
-import * as yup from "yup"
+import {EyeIcon, EyeSlashIcon} from '@heroicons/vue/24/outline'
+import {useAuthStore} from "../../store/authStore.js"
 
-const globalState = inject('globalState')
+import apiClient from '../../plugin/axios.js'
+import {Form, Field, ErrorMessage} from 'vee-validate'
+
+import * as yup from 'yup'
+
 const router = useRouter()
+const auth = useAuthStore()
+const appName = import.meta.env.VITE_APP_NAME;
 
 const schema = yup.object({
   firstname: yup
@@ -154,7 +145,8 @@ const handleRegister = async (values) => {
       password: values.password,
     })
 
-    localStorage.setItem('jwt_token', response.data.token)
+    auth.loginSuccess(response.data)
+
     router.push('/dashboard')
   } catch (error) {
     if (error.response.status === 409) {

@@ -1,12 +1,12 @@
 <template>
-  <div class="lg:bg-body dark:bg-body-dark flex items-center justify-center h-full flex-grow">
+  <div class="lg:bg-body dark:bg-body-dark flex items-center justify-center h-[100vh] flex-grow">
     <div class="text-gray-900 flex justify-center sm:items-center dark:text-white w-full lg:w-10/12 xl:w-9/12">
-      <div class="w-full max-w-screen-lg m-0 lg:m-10 lg:min-h-[32em] lg:shadow lg:rounded-5xl overflow-hidden flex justify-center lg:flex-1 flex-none
+      <div class="w-full max-w-screen-lg m-0 lg:m-10 lg:h-[25em] lg:shadow lg:rounded-5xl overflow-hidden flex justify-center lg:flex-1 flex-none
                    lg:bg-box dark:lg:bg-box-dark">
         <div class="lg:w-3/6 xl:w-6/12 p-6 sm:px-8 lg:py-5 flex lg:flex-none items-center">
           <div class="flex flex-col px-10">
             <h1 class="mt-2 mb-5 text-xl font-poppins-semi-bold">
-              Bienvenue sur <span class="text-teal-500">{{ globalState.APP_NAME }}</span>
+              Bienvenue sur <span class="text-teal-500">{{ appName }}</span>
             </h1>
             <h1 class="text-2xl font-playfair">
               Réinitialisez votre mot de passe
@@ -63,13 +63,11 @@
 </template>
 
 <script setup>
-import {ref, inject} from 'vue'
+import {ref} from 'vue'
 import apiClient from '../../plugin/axios.js'
 import {Form, Field, ErrorMessage} from 'vee-validate'
 import * as yup from 'yup'
 import {useToast} from "../../plugin/useToast.js";
-
-const globalState = inject('globalState')
 
 const schema = yup.object({
   email: yup
@@ -80,6 +78,7 @@ const schema = yup.object({
 
 const isLoading = ref(false)
 const errorMessage = ref(null)
+const appName = import.meta.env.VITE_APP_NAME;
 
 const handleLogin = async (values) => {
   isLoading.value = true
