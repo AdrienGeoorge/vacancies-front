@@ -11,10 +11,6 @@
             <h1 class="text-3xl font-playfair">
               Créez votre compte
             </h1>
-            <div v-if="errorMessage !== null"
-                 class="relative block w-full mt-3 py-3 px-4 mb-4 text-base leading-5 text-white bg-red-400 rounded-2xl opacity-100 font-regular">
-              {{ errorMessage }}
-            </div>
             <Form class="w-full flex-1 mt-5" v-slot="{ submitCount }" :validation-schema="schema"
                   @submit="handleRegister">
               <Field as="input" name="firstname" type="text" aria-label="Prenom"
@@ -141,7 +137,6 @@ const schema = yup.object({
 })
 
 const isLoading = ref(false)
-const errorMessage = ref(null)
 const showPassword = ref(false)
 
 const togglePassword = () => {
@@ -150,7 +145,6 @@ const togglePassword = () => {
 
 const handleRegister = async (values) => {
   isLoading.value = true
-  errorMessage.value = null
 
   try {
     const response = await apiClient.post('/register', {
