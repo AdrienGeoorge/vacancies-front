@@ -138,7 +138,6 @@ const handleLogin = async (values) => {
     auth.loginSuccess(response.data)
     router.push('/dashboard')
   } catch (error) {
-    console.error('Erreur lors de la connexion :', error)
     useToast().addToast(error?.response?.data?.message || 'Une erreur inconnue est survenue.', 'error')
   } finally {
     isLoading.value = false
