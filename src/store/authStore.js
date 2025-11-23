@@ -25,7 +25,6 @@ export const useAuthStore = defineStore('auth', {
 
         restore() {
             const saved = localStorage.getItem('user')
-            console.log('ici' + saved)
             if (saved) {
                 this.user = JSON.parse(saved)
             }

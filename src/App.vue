@@ -4,19 +4,29 @@ import {useRoute, useRouter} from "vue-router"
 import {useAuthStore} from "./store/authStore.js"
 import {Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/vue'
 import {Bars3Icon, BellIcon, XMarkIcon} from '@heroicons/vue/24/outline'
+import {reactive, watch} from "vue"
 
 const route = useRoute()
 const router = useRouter()
+const appName = import.meta.env.VITE_APP_NAME
+let routeName
 
 const auth = useAuthStore()
 auth.restore()
 
-const navigation = [
-  {name: 'Dashboard', href: '/dashboard', current: true},
+watch(() => route.path, (newRoute) => {
+  navigation.map(item => {
+    item.current = item.href === newRoute;
+  })
+  routeName = reactive(navigation.find(item => item.current === true)?.name)
+})
+
+const navigation = reactive([
+  {name: 'Dashboard', href: '/dashboard', current: false},
   {name: 'Team', href: '/profile', current: false},
   {name: 'Projects', href: '#', current: false},
   {name: 'Calendar', href: '#', current: false},
-]
+])
 
 const userNavigation = [
   {name: 'Consulter mon profil', href: '#'},
@@ -24,8 +34,7 @@ const userNavigation = [
 ]
 
 const logout = () => {
-  localStorage.removeItem('user')
-  localStorage.removeItem('jwt_token')
+  auth.logout()
   router.push('/login')
 }
 </script>
@@ -43,16 +52,13 @@ const logout = () => {
             <div class="flex">
               <div class="flex shrink-0 items-center">
                 <img class="h-8 w-auto dark:hidden"
-                     src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
-                     alt="Your Company"/>
-                <img class="h-8 w-auto not-dark:hidden"
-                     src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
-                     alt="Your Company"/>
+                     src="/images/index.png"
+                     :alt="appName"/>
               </div>
               <div class="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
                 <router-link :to="item.href" v-for="item in navigation" :key="item.name"
-                             :class="[item.current ? 'border-indigo-600 text-gray-900 dark:border-indigo-500 dark:text-white' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/20 dark:hover:text-gray-200', 'inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium']"
-                             :aria-current="item.current ? 'page' : undefined">{{ item.name }}
+                             :class="[item.current ? 'border-teal-400 text-gray-900 dark:text-white' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/20 dark:hover:text-gray-200', 'inline-flex items-center border-b-3 px-1 pt-1 text-sm font-medium']">
+                  {{ item.name }}
                 </router-link>
               </div>
             </div>
@@ -74,7 +80,8 @@ const logout = () => {
                     <img v-if="auth.user.avatar"
                          class="size-8 rounded-full outline -outline-offset-1 outline-black/5 dark:outline-white/10"
                          :src="auth.user.avatar" alt=""/>
-                    <div v-else class="size-10 rounded-full bg-gray-400 dark:bg-gray-600 flex justify-center items-center text-white text-lg font-bold">
+                    <div v-else
+                         class="size-10 rounded-full bg-gray-400 dark:bg-gray-600 flex justify-center items-center text-white text-lg font-bold">
                       {{ auth.user.firstname.charAt(0) }}
                     </div>
                   </div>
@@ -117,10 +124,17 @@ const logout = () => {
 
         <DisclosurePanel class="sm:hidden">
           <div class="space-y-1 pt-2 pb-3">
-            <DisclosureButton v-for="item in navigation" :key="item.name" as="a" :href="item.href"
-                              :class="[item.current ? 'border-indigo-600 bg-indigo-50 text-indigo-700 dark:border-indigo-500 dark:bg-indigo-600/10 dark:text-indigo-300' : 'border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800 dark:text-gray-400 dark:hover:border-white/20 dark:hover:bg-white/5 dark:hover:text-gray-200', 'block border-l-4 py-2 pr-4 pl-3 text-base font-medium']"
-                              :aria-current="item.current ? 'page' : undefined">{{ item.name }}
-            </DisclosureButton>
+            <router-link
+                v-for="item in navigation"
+                :key="item.name"
+                :to="item.href"
+                class="block"
+            >
+              <DisclosureButton
+                  :class="[item.current ? 'border-teal-500 bg-teal-100 text-teal-700 dark:border-teal-500 dark:bg-teal-600/10 dark:text-teal-300' : 'border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800 dark:text-gray-400 dark:hover:border-white/20 dark:hover:bg-white/5 dark:hover:text-gray-200', 'w-full text-left block border-l-4 py-2 pr-4 pl-3 text-base font-medium']">
+                {{ item.name }}
+              </DisclosureButton>
+            </router-link>
           </div>
           <div class="border-t border-gray-200 pt-4 pb-3 dark:border-gray-700">
             <div class="flex items-center px-4" v-if="auth.user">
@@ -128,7 +142,8 @@ const logout = () => {
                 <img v-if="auth.user.avatar"
                      class="size-10 rounded-full outline -outline-offset-1 outline-black/5 dark:outline-white/10"
                      :src="auth.user.avatar" alt=""/>
-                <div v-else class="size-10 rounded-full bg-gray-400 dark:bg-gray-600 flex justify-center items-center text-white text-lg font-bold">
+                <div v-else
+                     class="size-10 rounded-full bg-gray-400 dark:bg-gray-600 flex justify-center items-center text-white text-lg font-bold">
                   {{ auth.user.firstname.charAt(0) }}
                 </div>
               </div>
@@ -144,10 +159,12 @@ const logout = () => {
               </button>
             </div>
             <div class="mt-3 space-y-1">
-              <DisclosureButton v-for="item in userNavigation" :key="item.name" as="a" :href="item.href"
-                                class="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-200">
-                {{ item.name }}
-              </DisclosureButton>
+              <router-link :to="item.href" v-for="item in userNavigation" :key="item.name">
+                <DisclosureButton
+                    class="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-200">
+                  {{ item.name }}
+                </DisclosureButton>
+              </router-link>
               <DisclosureButton @click="logout"
                                 class="text-base font-medium cursor-pointer text-center rounded-xl outline-hidden bg-red-400 border-2 border-red-300 block mx-4 px-2 py-2 text-white">
                 Se déconnecter
@@ -159,7 +176,7 @@ const logout = () => {
       <header
           class="relative bg-white shadow-sm dark:bg-gray-800 dark:shadow-none dark:after:pointer-events-none dark:after:absolute dark:after:inset-x-0 dark:after:inset-y-0 dark:after:border-y dark:after:border-white/10">
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Dashboard</h1>
+          <h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">{{ routeName }}</h1>
         </div>
       </header>
       <main>
