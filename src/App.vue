@@ -4,16 +4,15 @@ import {useRoute, useRouter} from "vue-router"
 import {useAuthStore} from "./store/authStore.js"
 import {Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/vue'
 import {Bars3Icon, BellIcon, XMarkIcon} from '@heroicons/vue/24/outline'
-import {reactive, watch} from "vue"
+import {onMounted, reactive, watch} from "vue"
 
 const route = useRoute()
 const router = useRouter()
-const appName = import.meta.env.VITE_APP_NAME
-let routeName
-
 const auth = useAuthStore()
-auth.restore()
 
+const appName = import.meta.env.VITE_APP_NAME
+
+let routeName
 watch(() => route.path, (newRoute) => {
   navigation.forEach(item => {
     item.current = item.href === newRoute;
@@ -25,7 +24,7 @@ watch(() => route.path, (newRoute) => {
 
 const navigation = reactive([
   {name: 'Mes voyages', title: 'Tableau de bord', href: '/dashboard', current: false},
-  {name: 'Créer un voyage', title: 'Préparation d\'un nouveau voyage', href: '/profile', current: false},
+  {name: 'Créer un voyage', title: 'Préparation d\'un nouveau voyage', href: '/trip/create', current: false},
 ])
 
 const userNavigation = [

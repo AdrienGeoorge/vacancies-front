@@ -40,16 +40,14 @@ import {useAuthStore} from "../store/authStore.js"
 import {ref} from "vue"
 
 const auth = useAuthStore()
-auth.restore()
-
 const apiUrl = import.meta.env.VITE_API_URL
 
 let trips = ref([])
 
 const getTrips = async () => {
   try {
-    const responseTest = await apiClient.get(`/trips/all/user/${auth.user.id}`)
-    trips.value = responseTest.data
+    const response = await apiClient.get(`/trips/all/user/${auth.user.id}`)
+    trips.value = response.data
   } catch (error) {
     useToast().addToast(error?.response?.data?.message ||
         'Une erreur inconnue est survenue lors de la récupération de vos voyages.', 'error')

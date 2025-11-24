@@ -2,14 +2,25 @@ import {createRouter, createWebHistory} from 'vue-router'
 import Login from '../components/Auth/Login.vue'
 import Register from "../components/Auth/Register.vue"
 import Dashboard from '../components/Dashboard.vue'
-import Profile from '../components/Profile.vue'
 import Claim from "../components/Password/Claim.vue"
 import Reset from "../components/Password/Reset.vue"
+import CreateTrip from "../components/Trip/CreateTrip.vue"
+import {useAuthStore} from "../store/authStore.js"
 
 const routes = [
     {path: '/', name: 'index', redirect: '/login'},
-    {path: '/login', name: 'login', component: Login, meta: {title: 'Bienvenue sur ' + import.meta.env.VITE_APP_NAME}},
-    {path: '/register', name: 'register', component: Register, meta: {title: import.meta.env.VITE_APP_NAME + ' - Inscription'}},
+    {
+        path: '/login',
+        name: 'login',
+        component: Login,
+        meta: {title: 'Bienvenue sur ' + import.meta.env.VITE_APP_NAME}
+    },
+    {
+        path: '/register',
+        name: 'register',
+        component: Register,
+        meta: {title: import.meta.env.VITE_APP_NAME + ' - Inscription'}
+    },
     {
         path: '/password/claim',
         name: 'password-claim',
@@ -22,8 +33,13 @@ const routes = [
         component: Reset,
         meta: {title: import.meta.env.VITE_APP_NAME + ' - Réinitialisez votre mot de passe'}
     },
-    {path: '/dashboard', name: 'dashboard', component: Dashboard, meta: {title: import.meta.env.VITE_APP_NAME + ' - Tableau de bord'}},
-    {path: '/profile', name: 'profile', component: Profile},
+    {
+        path: '/dashboard',
+        name: 'dashboard',
+        component: Dashboard,
+        meta: {title: import.meta.env.VITE_APP_NAME + ' - Tableau de bord'}
+    },
+    {path: '/trip/create', name: 'trip_create', component: CreateTrip},
 ]
 
 const router = createRouter({
@@ -32,6 +48,9 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+    const auth = useAuthStore()
+    auth.restore()
+
     const token = localStorage.getItem('jwt_token')
 
     const isPublicRoute =
