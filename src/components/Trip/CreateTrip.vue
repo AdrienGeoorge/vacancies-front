@@ -72,8 +72,8 @@
         </li>
       </ol>
     </nav>
-    <Form ref="formRef" :validation-schema="schema" @submit="handleSubmit" class="px-12 pt-6 pb-10">
-      <div data-page="1" class="page-selector block flex flex-col lg:flex-row justify-between items:start lg:items-end">
+    <Form ref="formRef" :validation-schema="schema" :initial-values="initialValues" @submit="handleSubmit" class="px-12 pt-6 pb-10">
+      <div data-page="1" class="page-selector block flex flex-col md:flex-row justify-between items-center md:items-end">
         <div class="page-content">
           <div class="text-base/7 font-semibold text-gray-900 dark:text-white">Quelle est ta prochaine destination?
           </div>
@@ -101,7 +101,7 @@
                           <div class="flex items-center">
                             <div
                                 :class="['grid size-6 shrink-0 place-items-center rounded-full', active ? 'bg-white' : 'bg-gray-300 dark:bg-gray-600']">
-                              <UserIcon
+                              <QuestionMarkCircleIcon
                                   :class="['size-4', active ? 'fill-teal-600 dark:fill-teal-500' : 'fill-white']"
                                   aria-hidden="true"/>
                             </div>
@@ -124,6 +124,10 @@
                   </transition>
                 </div>
               </Combobox>
+              <Field as="input" name="selectedCountry" type="hidden"/>
+              <ErrorMessage name="selectedCountry" v-slot="{ message }">
+                <p class="text-red-500 text-sm mt-1">{{ message }}</p>
+              </ErrorMessage>
             </div>
           </div>
 
@@ -150,7 +154,7 @@
         </div>
 
         <button
-            @click="validatePageAndGo(2, ['name'])"
+            @click="validatePageAndGo(2)"
             class="mt-5 tracking-wide bg-teal-500 border-2 border-teal-400 text-white
                                     py-2 px-4 rounded-full flex items-center justify-center hover:bg-teal-700
                                     transition-all duration-300 ease-in-out
@@ -161,7 +165,7 @@
         </button>
       </div>
       <div data-page="2"
-           class="page-selector hidden flex flex-col lg:flex-row justify-between items:start lg:items-end">
+           class="page-selector hidden flex flex-col md:flex-row justify-between items-center md:items-end">
         <div class="page-content">
           <div class="text-base/7 font-semibold text-gray-900 dark:text-white">A quelles dates comptes-tu réaliser ce
             voyage?
@@ -188,7 +192,7 @@
           </div>
         </div>
         <button
-            @click="validatePageAndGo(3, [])"
+            @click="validatePageAndGo(3)"
             class="mt-5 tracking-wide bg-teal-500 border-2 border-teal-400 text-white
                                     py-2 px-4 rounded-full flex items-center justify-center hover:bg-teal-700
                                     transition-all duration-300 ease-in-out
@@ -199,7 +203,7 @@
         </button>
       </div>
       <div data-page="3"
-           class="page-selector hidden flex flex-col lg:flex-row justify-between items:start lg:items-end">
+           class="page-selector hidden flex flex-col md:flex-row justify-between items-center md:items-end">
         <div class="page-content">
           <div class="text-base/7 font-semibold text-gray-900 dark:text-white">Renseignes une courte description pour
             parler de ton voyage.
@@ -247,9 +251,9 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref} from 'vue'
+import {computed, onMounted, ref, watch} from 'vue'
 import {ChevronDownIcon, ArrowRightIcon} from '@heroicons/vue/20/solid'
-import {UserIcon} from '@heroicons/vue/16/solid'
+import {QuestionMarkCircleIcon} from '@heroicons/vue/16/solid'
 import {useToast} from "../../plugin/useToast.js"
 import {CheckIcon} from '@heroicons/vue/24/solid'
 import {Form, Field, ErrorMessage} from 'vee-validate'
@@ -335,25 +339,47 @@ const changePage = stepNumber => {
 }
 
 const schema = yup.object({
-  name: yup.string().required("Tu dois saisir un nom."),
-  departure_date: yup.date().optional(),
-  return_date: yup.date().optional(),
-  description: yup.string().required("Tu dois saisir une description."),
-  image: yup.mixed().required("Tu dois ajouter une image.")
+  name: yup.string().required("Le nom est obligatoire."),
+  selectedCountry: yup.string().required("La sélection d'un pays est obligatoire."),
+  departure_date: yup.date().notRequired(),
+  return_date: yup.date().notRequired(),
+  description: yup.string().required("La description est obligatoire."),
+  image: yup.mixed().required("L'ajout d'une image est obligatoire.")
 })
 
+const initialValues = {
+  name: '',
+  selectedCountry: null,
+  departure_date: null,
+  return_date: null,
+  description: '',
+  image: null,
+}
+
 const formRef = ref(null)
+
+watch(
+  selectedCountry,
+  (val) => {
+    if (val && typeof val === 'object') {
+      const code = val.code && val.code.length ? val.code.trim().toUpperCase() : null
+      formRef.value?.setFieldValue('selectedCountry', code && code.length ? code : null)
+    }
+  }
+)
+
 const getCurrentStepId = () => steps.value.find(s => s.status === 'current')?.id || 1
 
 const pageFields = {
-  1: ['name'],
+  1: ['selectedCountry', 'name'],
   2: ['departure_date', 'return_date'],
   3: ['image'],
 }
 
 // Vérifier les champs de la page courante et aller vers la prochaine si tous les champs sont valides
-const validatePageAndGo = async (nextStep, fields) => {
+const validatePageAndGo = async (nextStep) => {
   let allValid = true
+  const fields = pageFields[nextStep -1] || []
 
   for (const fieldName of fields) {
     try {
@@ -368,6 +394,7 @@ const validatePageAndGo = async (nextStep, fields) => {
         allValid = false
       }
     } catch (e) {
+      console.log(e)
       allValid = false
     }
   }
@@ -392,8 +419,7 @@ const onStepClick = (step) => {
   const nextAllowedId = currentId + 1
   const destination = Math.min(targetId, nextAllowedId)
 
-  const fields = pageFields[currentId] || []
-  validatePageAndGo(destination, fields)
+  validatePageAndGo(destination)
 }
 
 const isLoading = ref(false)
