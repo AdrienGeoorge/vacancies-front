@@ -5,6 +5,7 @@ import Dashboard from '../components/Dashboard.vue'
 import Claim from "../components/Password/Claim.vue"
 import Reset from "../components/Password/Reset.vue"
 import CreateTrip from "../components/Trip/CreateTrip.vue"
+import ShowTrip from "../components/Trip/ShowTrip.vue"
 import {useAuthStore} from "../store/authStore.js"
 
 const routes = [
@@ -39,7 +40,22 @@ const routes = [
         component: Dashboard,
         meta: {title: import.meta.env.VITE_APP_NAME + ' - Tableau de bord'}
     },
-    {path: '/trip/create', name: 'trip_create', component: CreateTrip},
+    {
+        path: '/trip/create',
+        name: 'trip_create',
+        component: CreateTrip,
+        meta: {title: import.meta.env.VITE_APP_NAME + ' - Création de votre voyage'}
+    },
+    {
+        path: '/trip/edit/:id',
+        name: 'trip_edit',
+        component: CreateTrip,
+        meta: {
+            title: import.meta.env.VITE_APP_NAME + ' - Edition de votre voyage',
+            navigationTitle: 'Edition d\'un voyage existant'
+        },
+    },
+    {path: '/trip/show/:id', name: 'trip_show', component: ShowTrip},
 ]
 
 const router = createRouter({
@@ -74,6 +90,11 @@ router.afterEach((to) => {
         document.title = to.meta.title
     } else {
         document.title = import.meta.env.VITE_APP_NAME
+    }
+
+    const navigationTitle = document.getElementById('navigation-title')
+    if (navigationTitle && to.meta.navigationTitle) {
+        navigationTitle.innerHTML = to.meta.navigationTitle
     }
 })
 

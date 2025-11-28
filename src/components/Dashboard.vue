@@ -2,7 +2,7 @@
   <div
       class="divide-y divide-gray-200 overflow-hidden rounded-4xl bg-gray-200 shadow-sm sm:grid sm:grid-cols-2 sm:divide-y-0 dark:divide-white/10 dark:bg-gray-900 dark:shadow-none dark:outline dark:-outline-offset-1 dark:outline-white/20">
     <div v-for="trip in trips" :key="trip.id"
-         :class="['group relative border-gray-200 bg-white p-6 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600 sm:odd:not-nth-last-2:border-b sm:odd:border-r sm:even:not-last:border-b dark:border-white/10 dark:bg-gray-800/50 dark:focus-within:outline-indigo-500']">
+         :class="['group relative border-gray-200 bg-white p-6 sm:odd:not-nth-last-2:border-b sm:odd:border-r sm:even:not-last:border-b dark:border-white/10 dark:bg-gray-800/50']">
       <div class="h-34 w-full bg-cover bg-center rounded-2xl"
            :style="{ backgroundImage: `url(${apiUrl + trip.image})` }"></div>
       <div class="mt-4 text-gray-900 dark:text-white">
@@ -22,10 +22,10 @@
           </span>
         </div>
         <div class="text-md text-base">
-          <a :href="'/trip/' + trip.id" class="focus:outline-hidden">
+          <RouterLink :to="'/trip/show/' + trip.id" class="focus:outline-hidden">
             <span class="absolute inset-0" aria-hidden="true"></span>
             {{ trip.countryName }}
-          </a>
+          </RouterLink>
         </div>
         <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ trip.description }}</p>
       </div>

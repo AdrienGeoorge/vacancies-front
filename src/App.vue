@@ -4,7 +4,7 @@ import {useRoute, useRouter} from "vue-router"
 import {useAuthStore} from "./store/authStore.js"
 import {Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/vue'
 import {Bars3Icon, BellIcon, XMarkIcon} from '@heroicons/vue/24/outline'
-import {onMounted, reactive, watch} from "vue"
+import {reactive, watch} from "vue"
 
 const route = useRoute()
 const router = useRouter()
@@ -179,7 +179,7 @@ const logout = () => {
       <header
           class="relative bg-white shadow-sm dark:bg-gray-800 dark:shadow-none dark:after:pointer-events-none dark:after:absolute dark:after:inset-x-0 dark:after:inset-y-0 dark:after:border-y dark:after:border-white/10">
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ routeName }}</h1>
+          <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white" id="navigation-title">{{ routeName }}</h1>
         </div>
       </header>
       <main>
