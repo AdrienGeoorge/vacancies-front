@@ -64,10 +64,10 @@
 
 <script setup>
 import {ref} from 'vue'
-import apiClient from '../../plugin/axios.js'
+import apiClient from '@/plugins/axios.js'
 import {Form, Field, ErrorMessage} from 'vee-validate'
 import * as yup from 'yup'
-import {useToast} from "../../plugin/useToast.js";
+import {useToast} from "@/plugins/useToast.js";
 
 const schema = yup.object({
   email: yup

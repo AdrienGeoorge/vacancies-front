@@ -15,11 +15,11 @@ const appName = import.meta.env.VITE_APP_NAME
 let routeName
 watch(() => route.path, (newRoute) => {
   navigation.forEach(item => {
-    item.current = item.href === newRoute;
+    item.current = item.href === newRoute
   })
 
-  const currentItem = navigation.find(item => item.current);
-  routeName = currentItem?.title ?? currentItem?.name;
+  const currentItem = navigation.find(item => item.current)
+  routeName = currentItem?.title ?? currentItem?.name
 })
 
 const navigation = reactive([

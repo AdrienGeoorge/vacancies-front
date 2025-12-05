@@ -89,10 +89,10 @@
 <script setup>
 import {onMounted, ref} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
-import {useToast} from "../../plugin/useToast.js"
+import {useToast} from "@/plugins/useToast.js"
 import {EyeIcon, EyeSlashIcon} from '@heroicons/vue/24/outline'
 
-import apiClient from '../../plugin/axios.js'
+import apiClient from '@/plugins/axios.js'
 import {Form, Field, ErrorMessage} from 'vee-validate'
 
 import * as yup from 'yup'

@@ -1,11 +1,14 @@
 import {createApp} from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
-import router from './router/router.js'
+import router from './router'
 import './assets/styles/app.scss'
+import initialize from "@/plugins/useCookies.js"
 
 const app = createApp(App)
 
 app.use(router)
 app.use(createPinia())
 app.mount('#app')
+
+initialize()

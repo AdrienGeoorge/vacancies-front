@@ -264,7 +264,7 @@
 import {computed, ref, watch} from 'vue'
 import {ChevronDownIcon, ArrowRightIcon} from '@heroicons/vue/20/solid'
 import {QuestionMarkCircleIcon} from '@heroicons/vue/16/solid'
-import {useToast} from "../../plugin/useToast.js"
+import {useToast} from "@/plugins/useToast.js"
 import {CheckIcon} from '@heroicons/vue/24/solid'
 import {Form, Field, ErrorMessage} from 'vee-validate'
 import {
@@ -275,9 +275,9 @@ import {
   ComboboxOptions,
 } from '@headlessui/vue'
 
-import apiClient from "../../plugin/axios.js"
+import apiClient from "@/plugins/axios.js"
 import * as yup from "yup"
-import router from "../../router/router.js"
+import router from "@/router"
 
 const props = defineProps({
   initialValues: Object,
@@ -358,7 +358,10 @@ const schema = yup.object({
       image: yup
           .mixed()
           .nullable()
-          .test('requiredIfNoImage', "L'ajout d'une image est obligatoire.", () => props.tripId),
+          .test('requiredIfNoImage', "L'ajout d'une image est obligatoire.", value => {
+            if (props.tripId) return true
+            return !!value
+          }),
     }
 )
 

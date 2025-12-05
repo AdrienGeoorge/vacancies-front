@@ -23,7 +23,7 @@
 
 <script setup>
 import {h} from 'vue'
-import {useToast} from '../../plugin/useToast.js'
+import {useToast} from '@/plugins/useToast.js'
 
 const toast = useToast()
 

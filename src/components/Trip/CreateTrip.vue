@@ -9,9 +9,9 @@
 <script setup>
 import TripForm from "./TripForm.vue"
 import {onBeforeMount, ref} from "vue"
-import router from "../../router/router.js"
-import apiClient from "../../plugin/axios.js";
-import {useToast} from "../../plugin/useToast.js"
+import router from "@/router"
+import apiClient from "@/plugins/axios.js";
+import {useToast} from "@/plugins/useToast.js"
 
 let initialValues = ref({
   name: '',
@@ -38,7 +38,7 @@ onBeforeMount(async () => {
 
   if (routeParams.id) {
     try {
-      const response = await apiClient.get(`/trips/get/${routeParams.id}`)
+      const response = await apiClient.get(`/trips/get/${routeParams.id}/form-data`)
       const data = response.data || {}
       initialValues.value = {
         name: data.name ?? '',
@@ -51,6 +51,10 @@ onBeforeMount(async () => {
     } catch (error) {
       useToast().addToast(error?.response?.data?.message ||
           'Une erreur inconnue est survenue lors de la récupération du voyage.', 'error')
+
+      if (error.response.status === 404) {
+        router.push('/dashboard')
+      }
     }
   }
 })
