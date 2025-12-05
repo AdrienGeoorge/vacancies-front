@@ -55,7 +55,14 @@ const routes = [
             navigationTitle: 'Edition d\'un voyage existant'
         },
     },
-    {path: '/trip/show/:id', name: 'trip_show', component: ShowTrip},
+    {
+        path: '/trip/show/:id',
+        name: 'trip_show',
+        component: ShowTrip,
+        meta: {
+            navigationTitle: 'Gestion de votre voyage'
+        }
+    },
 ]
 
 const router = createRouter({

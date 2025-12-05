@@ -2,7 +2,8 @@
   <div class="divide-y divide-gray-200 rounded-4xl bg-white shadow-sm
         sm:divide-y-0 dark:divide-white/10 dark:bg-gray-900 dark:shadow-none dark:outline dark:-outline-offset-1
         dark:outline-white/20">
-    <TripForm :initial-values="initialValues" :countries="countries" :trip-id="router.currentRoute.value.params.id ? router.currentRoute.value.params.id : null"/>
+    <TripForm :initial-values="initialValues" :countries="countries"
+              :trip-id="router.currentRoute.value.params.id ? router.currentRoute.value.params.id : null"/>
   </div>
 </template>
 
@@ -49,12 +50,11 @@ onBeforeMount(async () => {
         image: data.image ?? null,
       }
     } catch (error) {
-      useToast().addToast(error?.response?.data?.message ||
-          'Une erreur inconnue est survenue lors de la récupération du voyage.', 'error')
+      let errorMessage = error?.response?.data?.message
+      if (errorMessage === undefined) errorMessage = error?.response?.data?.detail
 
-      if (error.response.status === 404) {
-        router.push('/dashboard')
-      }
+      useToast().addToast(errorMessage ? errorMessage : 'Une erreur inconnue est survenue lors de la récupération du voyage.', 'error')
+      router.push('/dashboard')
     }
   }
 })
